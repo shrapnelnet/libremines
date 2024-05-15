@@ -14,11 +14,15 @@ public class Controller {
     @FXML
     GridPane grid;
 
+    @FXML
+    ImageView smiley;
+
 
     // i already said i'm sorry!
     Set<String> visitedTiles = new HashSet<>();
     Grid gridHandler;
     GridWrapper wrapper;
+    boolean gameOver = false;
 
     @FXML
     private void initialize() {
@@ -28,17 +32,40 @@ public class Controller {
 
     @FXML
     private void gridClicked(MouseEvent event) {
+        if (gameOver)
+            return;
         Node tileClicked = event.getPickResult().getIntersectedNode();
         int column = GridPane.getColumnIndex(tileClicked);
         int row = GridPane.getRowIndex(tileClicked);
         if (wrapper.atColumn(column).atRow(row).isBomb()) {
+            gameOver = true;
             System.out.println("DEAD!!!");
+            URL smileyURL = getClass().getResource("img/face_dead.png");
+            smiley.setImage(new Image(smileyURL.toString()));
+            ImageView tileClickedImage = (ImageView) tileClicked;
+            URL deathBombURL = getClass().getResource("img/bomb_death.png");
+            tileClickedImage.setImage(new Image(deathBombURL.toString()));
+            showAllBombs();
             return;
             // todo do stuff!!
         }
 
         setAdjacentCount(tileClicked);
         expandGrid(column, row);
+    }
+
+    void showAllBombs() {
+        Node[] children = grid.getChildren().toArray(new Node[0]);
+        int column, row;
+        for (column = 0; column < 30; ++column) {
+            for (row = 0; row < 16; ++row) {
+                if (wrapper.atColumn(column).atRow(row).isBomb()) {
+                    ImageView currentBombTile = (ImageView) children[column + row * 30];
+                    URL bombRevealedURL = getClass().getResource("img/bomb_revealed.png");
+                    currentBombTile.setImage(new Image(bombRevealedURL.toString()));
+                }
+            }
+        }
     }
 
     void setAdjacentCount(Node tileClicked) {
