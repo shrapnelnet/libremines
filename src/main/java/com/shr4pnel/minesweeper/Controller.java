@@ -47,6 +47,8 @@ public class Controller {
 
 
     private void reinitialize() {
+        timer.cancel();
+        isFirstLoad = true;
         timer = new Timer();
         URL blank = getClass().getResource("img/blank.png");
         for (Node n : grid.getChildren()) {
