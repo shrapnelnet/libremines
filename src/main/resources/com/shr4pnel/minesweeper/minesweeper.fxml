@@ -80,22 +80,22 @@
                 </ImageView>
                 <Rectangle fill="GREY" height="23.0" layoutX="446.0" layoutY="15.0" smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="39.0" />
                 <Rectangle fill="WHITE" height="23.0" layoutX="448.0" layoutY="17.0" smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="39.0" />
-                <ImageView fitHeight="23.0" fitWidth="13.0" layoutX="447.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                <ImageView fx:id="time_1" fitHeight="23.0" fitWidth="13.0" layoutX="447.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
                     <image>
                         <Image url="@img/0_seconds.png" />
                     </image>
                 </ImageView>
-                <ImageView fitHeight="23.0" fitWidth="13.0" layoutX="460.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                <ImageView fx:id="time_2" fitHeight="23.0" fitWidth="13.0" layoutX="460.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
                     <image>
                         <Image url="@img/0_seconds.png" />
                     </image>
                 </ImageView>
-                <ImageView fitHeight="23.0" fitWidth="13.0" layoutX="473.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                <ImageView fx:id="time_3" fitHeight="23.0" fitWidth="13.0" layoutX="473.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true" smooth="false">
                     <image>
                         <Image url="@img/0_seconds.png" />
                     </image>
                 </ImageView>
-                <ImageView fx:id="smiley" fitHeight="26.0" fitWidth="26.0" layoutX="238.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" smooth="false">
+                <ImageView fx:id="smiley" fitHeight="26.0" fitWidth="26.0" layoutX="238.0" layoutY="15.0" onMousePressed="#smileyPressed" onMouseReleased="#smileyReleased" pickOnBounds="true" preserveRatio="true" smooth="false">
                     <image>
                         <Image url="@img/face_smile.png" />
                     </image>
