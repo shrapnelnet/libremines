@@ -1,6 +1,7 @@
 package com.shr4pnel.minesweeper;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.fxml.FXML;
@@ -42,11 +43,17 @@ public class Controller {
     int time = 0;
     long startTime;
     int bombCount = 99;
+    private Node[][] gridPaneArray;
+
 
     @FXML
     private void initialize() {
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
+        gridPaneArray = new Node[30][16];
+        for (Node node : grid.getChildren()) {
+            gridPaneArray[GridPane.getColumnIndex(node)][GridPane.getRowIndex(node)] = node;
+        }
     }
 
 
@@ -69,6 +76,7 @@ public class Controller {
         wrapper = gridHandler.grid;
     }
 
+
     @FXML
     private void gridClicked(MouseEvent event) {
         if (gameOver) {
@@ -89,8 +97,11 @@ public class Controller {
             gameOver(tileClicked);
             return;
         }
+        int adjacentBombs = getAdjacentCount(tileClicked);
         setAdjacentCount(tileClicked);
-        expandGrid(column, row);
+        if (adjacentBombs == 0) {
+            System.out.println("todo. implement this stupid!");
+        }
     }
 
     void gameOver(Node tileClicked) {
@@ -181,8 +192,9 @@ public class Controller {
         for (Node node : grid.getChildren()) {
             int column = GridPane.getColumnIndex(node);
             int row = GridPane.getRowIndex(node);
-            if (column == clickedColumn && row == clickedRow)
+            if (column == clickedColumn && row == clickedRow) {
                 continue;
+            }
             if (wrapper.atColumn(column).atRow(row).isBomb()) {
                 ImageView imageView = (ImageView) node;
                 imageView.setImage(new Image(String.valueOf(bombRevealedURL)));
@@ -205,15 +217,16 @@ public class Controller {
     }
 
     void setAdjacentCount(Node tileClicked) {
-        int column = GridPane.getColumnIndex(tileClicked);
-        int row = GridPane.getRowIndex(tileClicked);
+        int adjacentBombs = getAdjacentCount(tileClicked);
         ImageView image = (ImageView) tileClicked;
-        int adjacentBombs = wrapper.atColumn(column).atRow(row).adjacentBombCount();
         URL imageURL = getClass().getResource("img/num_" + adjacentBombs + ".png");
         image.setImage(new Image(String.valueOf(imageURL)));
     }
 
-    void expandGrid(int baseColumn, int baseRow) {
+    int getAdjacentCount(Node tileClicked) {
+        int column = GridPane.getColumnIndex(tileClicked);
+        int row = GridPane.getRowIndex(tileClicked);
+        return wrapper.atColumn(column).atRow(row).adjacentBombCount();
 
     }
 }

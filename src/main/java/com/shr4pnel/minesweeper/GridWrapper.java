@@ -1,10 +1,22 @@
 package com.shr4pnel.minesweeper;
 
+//class ValidTileBean {
+//    boolean top;
+//    boolean topRight;
+//    boolean right;
+//    boolean bottomRight;
+//    boolean bottom;
+//    boolean bottomLeft;
+//    boolean left;
+//    boolean topLeft;
+//}
+
 
 public class GridWrapper {
     final boolean[][] grid = new boolean[30][16];
     private int currentColumn;
     private int currentRow;
+
 
     public GridWrapper() {
         this.currentColumn = 0;
@@ -66,41 +78,59 @@ public class GridWrapper {
         return count;
     }
 
-    private int topRight() {
-        return grid[currentColumn + 1][currentRow - 1] ? 1 : 0;
-    }
-
     private int top() {
-        return grid[currentColumn][currentRow - 1] ? 1 : 0;
+        return isValid() && currentRow > 0 ? (grid[currentColumn][currentRow - 1] ? 1 : 0) : 0;
     }
 
-    private int topLeft() {
-        return grid[currentColumn - 1][currentRow - 1] ? 1 : 0;
-    }
-
-    private int left() {
-        return grid[currentColumn - 1][currentRow] ? 1 : 0;
-    }
-
-    private int bottomLeft() {
-        return grid[currentColumn - 1][currentRow + 1] ? 1 : 0;
-    }
-
-    private int bottom() {
-        return grid[currentColumn][currentRow + 1] ? 1 : 0;
-    }
-
-    private int bottomRight() {
-        return grid[currentColumn + 1][currentRow + 1] ? 1 : 0;
+    private int topRight() {
+        return isValid() && currentColumn < 29 && currentRow > 0 ?
+            (grid[currentColumn + 1][currentRow - 1] ? 1 : 0) : 0;
     }
 
     private int right() {
-        return grid[currentColumn + 1][currentRow] ? 1 : 0;
+        return isValid() && currentColumn < 29 ? (grid[currentColumn + 1][currentRow] ? 1 : 0) : 0;
+    }
+
+    private int bottomRight() {
+        return isValid() && currentColumn < 29 && currentRow < 15 ?
+            (grid[currentColumn + 1][currentRow + 1] ? 1 : 0) : 0;
+    }
+
+    private int bottom() {
+        return isValid() && currentRow < 15 ? (grid[currentColumn][currentRow + 1] ? 1 : 0) : 0;
+    }
+
+    private int bottomLeft() {
+        return isValid() && currentColumn > 0 && currentRow < 15 ?
+            (grid[currentColumn - 1][currentRow + 1] ? 1 : 0) : 0;
+    }
+
+    private int left() {
+        return isValid() && currentColumn > 0 ? (grid[currentColumn - 1][currentRow] ? 1 : 0) : 0;
+    }
+
+    private int topLeft() {
+        return isValid() && currentColumn > 0 && currentRow > 0 ?
+            (grid[currentColumn - 1][currentRow - 1] ? 1 : 0) : 0;
     }
 
     boolean isValid() {
-        return this.currentColumn >= 0 && this.currentColumn < 30 && this.currentRow >= 0 && this.currentRow < 16;
+        return this.currentColumn >= 0 && this.currentColumn < 30 && this.currentRow >= 0 &&
+            this.currentRow < 16;
     }
+
+//    ValidTileBean getBounds() {
+//        ValidTileBean validTiles = new ValidTileBean();
+//        validTiles.top = top() != 0;
+//        validTiles.topRight = topRight() != 0;
+//        validTiles.right = right() != 0;
+//        validTiles.bottomRight = bottomRight() != 0;
+//        validTiles.bottom = bottom() != 0;
+//        validTiles.bottomLeft = bottomLeft() != 0;
+//        validTiles.left = left() != 0;
+//        validTiles.topLeft = topLeft() != 0;
+//        return validTiles;
+//    }
 
     void printGrid() {
         int i, j;

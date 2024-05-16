@@ -15,9 +15,8 @@ public class Grid {
 
     private void generateBombs(int bombMax) {
         int i;
-        boolean success = false;
+        boolean success;
         for (i = 0; i < bombMax; ++i) {
-            System.out.println("Pass " + i);
             success = false;
             while (!success) {
                 int column = ThreadLocalRandom.current().nextInt(30);
