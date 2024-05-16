@@ -1,9 +1,8 @@
 package com.shr4pnel.minesweeper;
 
-import javax.swing.text.html.ImageView;
 
 public class GridWrapper {
-    private final boolean[][] grid = new boolean[30][16];
+    final boolean[][] grid = new boolean[30][16];
     private int currentColumn;
     private int currentRow;
 
