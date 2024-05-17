@@ -14,90 +14,140 @@ import javafx.scene.layout.GridPane;
 
 public class Controller {
     @FXML
-    GridPane grid;
+    private GridPane grid;
 
     @FXML
-    ImageView smiley;
+    private ImageView smiley, time_1, time_2, time_3, bomb_2, bomb_3;
 
-    @FXML
-    ImageView time_1;
-
-    @FXML
-    ImageView time_2;
-
-    @FXML
-    ImageView time_3;
-
-    @FXML
-    ImageView bomb_2;
-
-    @FXML
-    ImageView bomb_3;
-
-
-    Grid gridHandler;
-    GridWrapper wrapper;
-    boolean gameOver = false;
-    boolean isFirstLoad = true;
+    private Grid gridHandler;
+    private GridWrapper wrapper;
+    private boolean gameOver = false;
+    private boolean isFirstLoad = true;
     static Timer timer = new Timer();
-    int time = 0;
-    long startTime;
-    int bombCount = 99;
-    private Node[][] gridPaneArray;
-
+    private int time = 0;
+    private long startTime;
+    private int bombCount = 99;
 
     @FXML
     private void initialize() {
+        setupGrid();
+        gridHandler = new Grid();
+        wrapper = gridHandler.grid;
+    }
+
+    private void setupGrid() {
         for (int column = 0; column < 30; ++column) {
             for (int row = 0; row < 16; ++row) {
-                Image blank =
-                    new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true,
-                        true);
-                ImageView blankImage = new ImageView(blank);
-                Button blankButton = new Button();
-                blankButton.setGraphic(blankImage);
-                blankButton.setMinSize(16, 16);
-                blankButton.setStyle(
-                    "-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;");
-                blankButton.setOnMouseClicked(this::buttonClicked);
+                Button blankButton = createBlankButton();
                 grid.add(blankButton, column, row);
             }
         }
-        gridHandler = new Grid();
-        wrapper = gridHandler.grid;
-        gridPaneArray = new Node[30][16];
     }
 
-    void buttonClicked(MouseEvent e) {
-        Button clicked = (Button) e.getSource();
-        int column = GridPane.getColumnIndex(clicked);
-        int row = GridPane.getRowIndex(clicked);
+    private Button createBlankButton() {
+        Image blank =
+            new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true, true);
+        ImageView blankImage = new ImageView(blank);
+        Button blankButton = new Button();
+        blankButton.setGraphic(blankImage);
+        blankButton.setMinSize(16, 16);
+        blankButton.setOnMouseClicked(this::buttonClicked);
+        return blankButton;
+    }
+
+    private void buttonClicked(MouseEvent e) {
         if (gameOver) {
             return;
         }
+        Button clicked = (Button) e.getSource();
+        int column = GridPane.getColumnIndex(clicked);
+        int row = GridPane.getRowIndex(clicked);
+
         if (isFirstLoad) {
             scheduleTimer();
+            isFirstLoad = false;
         }
-        isFirstLoad = false;
+
         if (e.getButton() == MouseButton.SECONDARY) {
             flag(clicked);
-            return;
-        }
-        if (wrapper.atColumn(column).atRow(row).isBomb()) {
-            gameOver(clicked);
-            return;
-        }
-        int adjacentBombs = getAdjacentCount(clicked);
-        setAdjacentCount(clicked);
-        if (adjacentBombs == 0) {
-            System.out.println("todo. implement this stupid!");
+        } else {
+            handlePrimaryClick(clicked, column, row);
         }
     }
 
+    private void handlePrimaryClick(Button clicked, int column, int row) {
+        if (wrapper.atColumn(column).atRow(row).isBomb()) {
+            gameOver(clicked);
+        } else {
+            int adjacentBombs = wrapper.adjacentBombCount();
+            setAdjacentCount(clicked, adjacentBombs);
+            if (adjacentBombs == 0) {
+                recursiveExpandTiles(column, row);
+            }
+        }
+    }
 
+    private void recursiveExpandTiles(int column, int row) {
+        if (row > 0) {
+            expandTile(column, row - 1);
+        }
+        if (row > 0 && column < 29) {
+            expandTile(column + 1, row - 1);
+        }
+        if (column < 29) {
+            expandTile(column + 1, row);
+        }
+        if (row < 15 && column < 29) {
+            expandTile(column + 1, row + 1);
+        }
+        if (row < 15) {
+            expandTile(column, row + 1);
+        }
+        if (row < 15 && column > 0) {
+            expandTile(column - 1, row + 1);
+        }
+        if (column > 0) {
+            expandTile(column - 1, row);
+        }
+        if (row > 0 && column > 0) {
+            expandTile(column - 1, row - 1);
+        }
+    }
+
+    private void expandTile(int column, int row) {
+        Node tile = getNodeByRowColumnIndex(row, column);
+        if (tile != null) {
+            Button button = (Button) tile;
+            if (button.isVisible()) {
+                int adjacentBombs = wrapper.atColumn(column).atRow(row).adjacentBombCount();
+                setAdjacentCount(button, adjacentBombs);
+                if (adjacentBombs == 0) {
+                    recursiveExpandTiles(column, row);
+                }
+            }
+        }
+    }
+
+    private Node getNodeByRowColumnIndex(int row, int column) {
+        for (Node node : grid.getChildren()) {
+            if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    @FXML
     private void reinitialize() {
         bombCount = 99;
         updateBombCounter();
+        resetTimer();
+        resetGrid();
+        gridHandler = new Grid();
+        wrapper = gridHandler.grid;
+    }
+
+    private void resetTimer() {
         URL zeroSecondURL = getClass().getResource("img/0_seconds.png");
         time_1.setImage(new Image(String.valueOf(zeroSecondURL)));
         time_2.setImage(new Image(String.valueOf(zeroSecondURL)));
@@ -105,151 +155,112 @@ public class Controller {
         timer.cancel();
         isFirstLoad = true;
         timer = new Timer();
-        URL blank = getClass().getResource("img/blank.png");
-        for (Node n : grid.getChildren()) {
-            Button nodeAsButton = (Button) n;
-            nodeAsButton.setGraphic(new ImageView(new Image(String.valueOf(blank), 16, 16, true, false)));
-        }
-        gridHandler = new Grid();
-        wrapper = gridHandler.grid;
     }
 
-//    @FXML
-//    private void gridClicked(MouseEvent event) {
+    private void resetGrid() {
+        URL blank = getClass().getResource("img/blank.png");
+        for (Node node : grid.getChildren()) {
+            Button button = (Button) node;
+            button.setGraphic(new ImageView(new Image(String.valueOf(blank), 16, 16, true, false)));
+        }
+    }
 
-    void gameOver(Node tileClicked) {
+    private void gameOver(Node tileClicked) {
         gameOver = true;
         timer.cancel();
-        System.out.println("DEAD!!!");
-        URL smileyURL = getClass().getResource("img/face_dead.png");
-        smiley.setImage(new Image(String.valueOf(smileyURL)));
-        Button tileClickedButton = (Button) tileClicked;
-        URL deathBombURL = getClass().getResource("img/bomb_death.png");
-        ImageView deathBombImage =
-            new ImageView(new Image(String.valueOf(deathBombURL), 16, 16, true, false));
-        tileClickedButton.setGraphic(deathBombImage);
-        tileClickedButton.setMinSize(16, 16);
-        tileClickedButton.setPrefSize(16, 16);
+        setImage(smiley, "img/face_dead.png");
+        setImage((Button) tileClicked, "img/bomb_death.png");
         showAllBombs(GridPane.getColumnIndex(tileClicked), GridPane.getRowIndex(tileClicked));
     }
 
-    void flag(Node tileClicked) {
+    private void flag(Node tileClicked) {
         bombCount--;
-        URL flagURL = getClass().getResource("img/bomb_flagged.png");
-        Image flagImage = new Image(String.valueOf(flagURL), 16, 16, true, false);
-        Button tile = (Button) tileClicked;
-//        if (tile.getGraphic().) {
-//            bombCount++;
-//        }
         updateBombCounter();
-        tile.setGraphic(new ImageView(new Image(String.valueOf(flagURL), 16, 16, true, false)));
+        setImage((Button) tileClicked, "img/bomb_flagged.png");
     }
 
-    void updateBombCounter() {
-        String bombCountString = String.valueOf(bombCount);
-        char[] bombCountCharArray = bombCountString.toCharArray();
-        if (bombCountString.length() == 2) {
-            URL bombCountTensURL =
-                getClass().getResource("img/" + bombCountCharArray[0] + "_seconds.png");
-            URL bombCountUnitsURL =
-                getClass().getResource("img/" + bombCountCharArray[1] + "_seconds.png");
-            bomb_2.setImage(new Image(String.valueOf(bombCountTensURL)));
-            bomb_3.setImage(new Image(String.valueOf(bombCountUnitsURL)));
-            return;
-        }
-        URL bombCountUnitsURL =
-            getClass().getResource("img/" + bombCountCharArray[1] + "_seconds.png");
-        bomb_3.setImage(new Image(String.valueOf(bombCountUnitsURL)));
+    private void updateBombCounter() {
+        String bombCountString = String.format("%03d", bombCount);
+        setBombCounterImage(bomb_2, bombCountString.charAt(1));
+        setBombCounterImage(bomb_3, bombCountString.charAt(2));
     }
 
-    void scheduleTimer() {
+    private void setBombCounterImage(ImageView imageView, char digit) {
+        URL imageURL = getClass().getResource("img/" + digit + "_seconds.png");
+        imageView.setImage(new Image(String.valueOf(imageURL)));
+    }
+
+    private void scheduleTimer() {
         startTime = System.currentTimeMillis();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 if (time >= 999) {
                     timer.cancel();
-                    return;
-                }
-                long currentTimeMillis = System.currentTimeMillis();
-                long elapsedTimeMillis = currentTimeMillis - startTime;
-                time = (int) (elapsedTimeMillis / 1000);
-                String timeString = String.valueOf(time);
-                char[] timeStringArray = timeString.toCharArray();
-                int length = timeString.length();
-                if (length == 3) {
-                    char hundred = timeStringArray[0];
-                    char tens = timeStringArray[1];
-                    char unit = timeStringArray[2];
-                    URL hundredURL = getClass().getResource("img/" + hundred + "_seconds.png");
-                    URL tensURL = getClass().getResource("img/" + tens + "_seconds.png");
-                    URL unitURL = getClass().getResource("img/" + unit + "_seconds.png");
-                    time_1.setImage(new Image(String.valueOf(hundredURL)));
-                    time_2.setImage(new Image(String.valueOf(tensURL)));
-                    time_3.setImage(new Image(String.valueOf(unitURL)));
-                } else if (length == 2) {
-                    char tens = timeStringArray[0];
-                    char unit = timeStringArray[1];
-                    URL tensURL = getClass().getResource("img/" + tens + "_seconds.png");
-                    URL unitURL = getClass().getResource("img/" + unit + "_seconds.png");
-                    time_2.setImage(new Image(String.valueOf(tensURL)));
-                    time_3.setImage(new Image(String.valueOf(unitURL)));
-                } else if (length == 1) {
-                    char unit = timeStringArray[0];
-                    URL unitURL = getClass().getResource("img/" + unit + "_seconds.png");
-                    time_3.setImage(new Image(String.valueOf(unitURL)));
+                } else {
+                    updateTimer();
                 }
             }
         };
         timer.schedule(task, 0, 1000);
     }
 
-    void showAllBombs(int clickedColumn, int clickedRow) {
-        URL bombRevealedURL = getClass().getResource("img/bomb_revealed.png");
+    private void updateTimer() {
+        long elapsedTimeMillis = System.currentTimeMillis() - startTime;
+        time = (int) (elapsedTimeMillis / 1000);
+        String timeString = String.format("%03d", time);
+        setTimerImage(time_1, timeString.charAt(0));
+        setTimerImage(time_2, timeString.charAt(1));
+        setTimerImage(time_3, timeString.charAt(2));
+    }
+
+    private void setTimerImage(ImageView imageView, char digit) {
+        URL imageURL = getClass().getResource("img/" + digit + "_seconds.png");
+        imageView.setImage(new Image(String.valueOf(imageURL)));
+    }
+
+    private void showAllBombs(int clickedColumn, int clickedRow) {
         for (Node node : grid.getChildren()) {
             int column = GridPane.getColumnIndex(node);
             int row = GridPane.getRowIndex(node);
-            if (column == clickedColumn && row == clickedRow) {
-                continue;
-            }
-            if (wrapper.atColumn(column).atRow(row).isBomb()) {
-                Button button = (Button) node;
-                ImageView buttonGraphic =
-                    new ImageView(new Image(String.valueOf(bombRevealedURL), 16, 16, true, false));
-                button.setGraphic(buttonGraphic);
+            if (!(column == clickedColumn && row == clickedRow) &&
+                wrapper.atColumn(column).atRow(row).isBomb()) {
+                setImage((Button) node, "img/bomb_revealed.png");
             }
         }
     }
 
-    @FXML
-    void smileyPressed() {
-        URL smileyURL = getClass().getResource("img/face_smile_pressed.png");
-        smiley.setImage(new Image(String.valueOf(smileyURL)));
+    private void setImage(Button button, String imagePath) {
+        URL imageURL = getClass().getResource(imagePath);
+        button.setGraphic(new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false)));
+    }
+
+    private void setImage(ImageView imageView, String imagePath) {
+        URL imageURL = getClass().getResource(imagePath);
+        imageView.setImage(new Image(String.valueOf(imageURL)));
     }
 
     @FXML
-    void smileyReleased() {
+    private void smileyPressed() {
+        setImage(smiley, "img/face_smile_pressed.png");
+    }
+
+    @FXML
+    private void smileyReleased() {
         gameOver = false;
-        URL smileyURL = getClass().getResource("img/face_smile.png");
-        smiley.setImage(new Image(String.valueOf(smileyURL)));
+        setImage(smiley, "img/face_smile.png");
         reinitialize();
     }
 
-    void setAdjacentCount(Node tileClicked) {
-        int adjacentBombs = getAdjacentCount(tileClicked);
+    private void setAdjacentCount(Node tileClicked, int adjacentBombs) {
         Button button = (Button) tileClicked;
         URL imageURL = getClass().getResource("img/num_" + adjacentBombs + ".png");
-        Button adjacentButton = new Button();
-        adjacentButton.setMinSize(16, 16);
-        ImageView buttonImage =
-            new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false));
-        button.setGraphic(buttonImage);
+        button.setGraphic(new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false)));
     }
 
-    int getAdjacentCount(Node tileClicked) {
+    private int getAdjacentCount(Node tileClicked) {
         int column = GridPane.getColumnIndex(tileClicked);
         int row = GridPane.getRowIndex(tileClicked);
         return wrapper.atColumn(column).atRow(row).adjacentBombCount();
-
     }
 }
