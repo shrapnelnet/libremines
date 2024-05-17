@@ -1,11 +1,11 @@
 package com.shr4pnel.minesweeper;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -48,11 +48,49 @@ public class Controller {
 
     @FXML
     private void initialize() {
+        for (int column = 0; column < 30; ++column) {
+            for (int row = 0; row < 16; ++row) {
+                Image blank =
+                    new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true,
+                        true);
+                ImageView blankImage = new ImageView(blank);
+                Button blankButton = new Button();
+                blankButton.setGraphic(blankImage);
+                blankButton.setMinSize(16, 16);
+                blankButton.setStyle(
+                    "-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;");
+                blankButton.setOnMouseClicked(this::buttonClicked);
+                grid.add(blankButton, column, row);
+            }
+        }
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
         gridPaneArray = new Node[30][16];
-        for (Node node : grid.getChildren()) {
-            gridPaneArray[GridPane.getColumnIndex(node)][GridPane.getRowIndex(node)] = node;
+    }
+
+    void buttonClicked(MouseEvent e) {
+        Button clicked = (Button) e.getSource();
+        int column = GridPane.getColumnIndex(clicked);
+        int row = GridPane.getRowIndex(clicked);
+        if (gameOver) {
+            return;
+        }
+        if (isFirstLoad) {
+            scheduleTimer();
+        }
+        isFirstLoad = false;
+        if (e.getButton() == MouseButton.SECONDARY) {
+            flag(clicked);
+            return;
+        }
+        if (wrapper.atColumn(column).atRow(row).isBomb()) {
+            gameOver(clicked);
+            return;
+        }
+        int adjacentBombs = getAdjacentCount(clicked);
+        setAdjacentCount(clicked);
+        if (adjacentBombs == 0) {
+            System.out.println("todo. implement this stupid!");
         }
     }
 
@@ -69,40 +107,15 @@ public class Controller {
         timer = new Timer();
         URL blank = getClass().getResource("img/blank.png");
         for (Node n : grid.getChildren()) {
-            ImageView nodeAsImage = (ImageView) n;
-            nodeAsImage.setImage(new Image(String.valueOf(blank)));
+            Button nodeAsButton = (Button) n;
+            nodeAsButton.setGraphic(new ImageView(new Image(String.valueOf(blank), 16, 16, true, false)));
         }
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
     }
 
-
-    @FXML
-    private void gridClicked(MouseEvent event) {
-        if (gameOver) {
-            return;
-        }
-        if (isFirstLoad) {
-            scheduleTimer();
-        }
-        isFirstLoad = false;
-        Node tileClicked = event.getPickResult().getIntersectedNode();
-        int column = GridPane.getColumnIndex(tileClicked);
-        int row = GridPane.getRowIndex(tileClicked);
-        if (event.getButton() == MouseButton.SECONDARY) {
-            flag(tileClicked);
-            return;
-        }
-        if (wrapper.atColumn(column).atRow(row).isBomb()) {
-            gameOver(tileClicked);
-            return;
-        }
-        int adjacentBombs = getAdjacentCount(tileClicked);
-        setAdjacentCount(tileClicked);
-        if (adjacentBombs == 0) {
-            System.out.println("todo. implement this stupid!");
-        }
-    }
+//    @FXML
+//    private void gridClicked(MouseEvent event) {
 
     void gameOver(Node tileClicked) {
         gameOver = true;
@@ -110,22 +123,26 @@ public class Controller {
         System.out.println("DEAD!!!");
         URL smileyURL = getClass().getResource("img/face_dead.png");
         smiley.setImage(new Image(String.valueOf(smileyURL)));
-        ImageView tileClickedImage = (ImageView) tileClicked;
+        Button tileClickedButton = (Button) tileClicked;
         URL deathBombURL = getClass().getResource("img/bomb_death.png");
-        tileClickedImage.setImage(new Image(String.valueOf(deathBombURL)));
+        ImageView deathBombImage =
+            new ImageView(new Image(String.valueOf(deathBombURL), 16, 16, true, false));
+        tileClickedButton.setGraphic(deathBombImage);
+        tileClickedButton.setMinSize(16, 16);
+        tileClickedButton.setPrefSize(16, 16);
         showAllBombs(GridPane.getColumnIndex(tileClicked), GridPane.getRowIndex(tileClicked));
     }
 
     void flag(Node tileClicked) {
         bombCount--;
         URL flagURL = getClass().getResource("img/bomb_flagged.png");
-        Image flagImage = new Image(String.valueOf(flagURL));
-        ImageView tile = (ImageView) tileClicked;
-        if (tile.getImage().equals(flagImage)) {
-            bombCount++;
-        }
+        Image flagImage = new Image(String.valueOf(flagURL), 16, 16, true, false);
+        Button tile = (Button) tileClicked;
+//        if (tile.getGraphic().) {
+//            bombCount++;
+//        }
         updateBombCounter();
-        tile.setImage(new Image(String.valueOf(flagURL)));
+        tile.setGraphic(new ImageView(new Image(String.valueOf(flagURL), 16, 16, true, false)));
     }
 
     void updateBombCounter() {
@@ -196,8 +213,10 @@ public class Controller {
                 continue;
             }
             if (wrapper.atColumn(column).atRow(row).isBomb()) {
-                ImageView imageView = (ImageView) node;
-                imageView.setImage(new Image(String.valueOf(bombRevealedURL)));
+                Button button = (Button) node;
+                ImageView buttonGraphic =
+                    new ImageView(new Image(String.valueOf(bombRevealedURL), 16, 16, true, false));
+                button.setGraphic(buttonGraphic);
             }
         }
     }
@@ -218,9 +237,13 @@ public class Controller {
 
     void setAdjacentCount(Node tileClicked) {
         int adjacentBombs = getAdjacentCount(tileClicked);
-        ImageView image = (ImageView) tileClicked;
+        Button button = (Button) tileClicked;
         URL imageURL = getClass().getResource("img/num_" + adjacentBombs + ".png");
-        image.setImage(new Image(String.valueOf(imageURL)));
+        Button adjacentButton = new Button();
+        adjacentButton.setMinSize(16, 16);
+        ImageView buttonImage =
+            new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false));
+        button.setGraphic(buttonImage);
     }
 
     int getAdjacentCount(Node tileClicked) {
