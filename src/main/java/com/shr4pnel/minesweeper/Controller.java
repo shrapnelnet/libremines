@@ -27,12 +27,15 @@ public class Controller {
     private int time = 0;
     private long startTime;
     private int bombCount = 99;
+    private boolean[][] expandedTiles;
 
     @FXML
     private void initialize() {
         setupGrid();
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
+        expandedTiles = new boolean[30][16];
+
     }
 
     private void setupGrid() {
@@ -88,29 +91,18 @@ public class Controller {
     }
 
     private void recursiveExpandTiles(int column, int row) {
-        if (row > 0) {
-            expandTile(column, row - 1);
-        }
-        if (row > 0 && column < 29) {
-            expandTile(column + 1, row - 1);
-        }
-        if (column < 29) {
-            expandTile(column + 1, row);
-        }
-        if (row < 15 && column < 29) {
-            expandTile(column + 1, row + 1);
-        }
-        if (row < 15) {
-            expandTile(column, row + 1);
-        }
-        if (row < 15 && column > 0) {
-            expandTile(column - 1, row + 1);
-        }
-        if (column > 0) {
-            expandTile(column - 1, row);
-        }
-        if (row > 0 && column > 0) {
-            expandTile(column - 1, row - 1);
+        if (column < 0 || column >= 30 || row < 0 || row >= 16 || expandedTiles[column][row] && !wrapper.atColumn(column).atRow(row).isBomb())
+            return;
+        expandTile(column, row);
+        if (wrapper.atColumn(column).atRow(row).adjacentBombCount() == 0) {
+            recursiveExpandTiles(column, row - 1);
+            recursiveExpandTiles(column + 1, row - 1);
+            recursiveExpandTiles(column + 1, row);
+            recursiveExpandTiles(column + 1, row + 1);
+            recursiveExpandTiles(column, row + 1);
+            recursiveExpandTiles(column - 1, row + 1);
+            recursiveExpandTiles(column - 1, row);
+            recursiveExpandTiles(column - 1, row - 1);
         }
     }
 
@@ -121,7 +113,8 @@ public class Controller {
             if (button.isVisible()) {
                 int adjacentBombs = wrapper.atColumn(column).atRow(row).adjacentBombCount();
                 setAdjacentCount(button, adjacentBombs);
-                if (adjacentBombs == 0) {
+                if (adjacentBombs == 0 && !expandedTiles[column][row]) {
+                    expandedTiles[column][row] = true;
                     recursiveExpandTiles(column, row);
                 }
             }
@@ -174,9 +167,20 @@ public class Controller {
     }
 
     private void flag(Node tileClicked) {
+        Button tileAsButton = (Button) tileClicked;
+        ImageView tileGraphic = (ImageView) tileAsButton.getGraphic();
+        Image tileGraphicImage = tileGraphic.getImage();
+        boolean flagged = tileGraphicImage.getUrl().contains("flagged.png");
+        if (flagged) {
+            bombCount++;
+            setImage(tileAsButton, "img/blank.png");
+            updateBombCounter();
+            return;
+        }
         bombCount--;
         updateBombCounter();
         setImage((Button) tileClicked, "img/bomb_flagged.png");
+
     }
 
     private void updateBombCounter() {
