@@ -170,6 +170,9 @@ public class Controller {
         Button tileAsButton = (Button) tileClicked;
         ImageView tileGraphic = (ImageView) tileAsButton.getGraphic();
         Image tileGraphicImage = tileGraphic.getImage();
+        if (!tileGraphicImage.getUrl().contains("blank.png") && !tileGraphicImage.getUrl().contains("flagged.png")) {
+            return;
+        }
         boolean flagged = tileGraphicImage.getUrl().contains("flagged.png");
         if (flagged) {
             bombCount++;
