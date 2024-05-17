@@ -63,36 +63,42 @@ public class Controller {
             return;
         }
         Button clicked = (Button) e.getSource();
+        ImageView buttonImageView = (ImageView) clicked.getGraphic();
+        Image buttonImage = buttonImageView.getImage();
         int column = GridPane.getColumnIndex(clicked);
         int row = GridPane.getRowIndex(clicked);
-
         if (isFirstLoad) {
             scheduleTimer();
             isFirstLoad = false;
         }
-
         if (e.getButton() == MouseButton.SECONDARY) {
             flag(clicked);
-        } else {
-            handlePrimaryClick(clicked, column, row);
+            return;
         }
+        if (buttonImage.getUrl().contains("flagged.png")) {
+            return;
+        }
+        handlePrimaryClick(clicked, column, row);
     }
 
     private void handlePrimaryClick(Button clicked, int column, int row) {
         if (wrapper.atColumn(column).atRow(row).isBomb()) {
             gameOver(clicked);
-        } else {
-            int adjacentBombs = wrapper.adjacentBombCount();
-            setAdjacentCount(clicked, adjacentBombs);
-            if (adjacentBombs == 0) {
-                recursiveExpandTiles(column, row);
-            }
+            return;
         }
+        int adjacentBombs = wrapper.adjacentBombCount();
+        setAdjacentCount(clicked, adjacentBombs);
+        if (adjacentBombs == 0) {
+            recursiveExpandTiles(column, row);
+        }
+
     }
 
     private void recursiveExpandTiles(int column, int row) {
-        if (column < 0 || column >= 30 || row < 0 || row >= 16 || expandedTiles[column][row] && !wrapper.atColumn(column).atRow(row).isBomb())
+        if (column < 0 || column >= 30 || row < 0 || row >= 16 ||
+            expandedTiles[column][row] && !wrapper.atColumn(column).atRow(row).isBomb()) {
             return;
+        }
         expandTile(column, row);
         if (wrapper.atColumn(column).atRow(row).adjacentBombCount() == 0) {
             recursiveExpandTiles(column, row - 1);
@@ -138,6 +144,7 @@ public class Controller {
         resetGrid();
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
+        expandedTiles = new boolean[30][16];
     }
 
     private void resetTimer() {
@@ -170,7 +177,8 @@ public class Controller {
         Button tileAsButton = (Button) tileClicked;
         ImageView tileGraphic = (ImageView) tileAsButton.getGraphic();
         Image tileGraphicImage = tileGraphic.getImage();
-        if (!tileGraphicImage.getUrl().contains("blank.png") && !tileGraphicImage.getUrl().contains("flagged.png")) {
+        if (!tileGraphicImage.getUrl().contains("blank.png") &&
+            !tileGraphicImage.getUrl().contains("flagged.png")) {
             return;
         }
         boolean flagged = tileGraphicImage.getUrl().contains("flagged.png");
@@ -263,11 +271,5 @@ public class Controller {
         Button button = (Button) tileClicked;
         URL imageURL = getClass().getResource("img/num_" + adjacentBombs + ".png");
         button.setGraphic(new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false)));
-    }
-
-    private int getAdjacentCount(Node tileClicked) {
-        int column = GridPane.getColumnIndex(tileClicked);
-        int row = GridPane.getRowIndex(tileClicked);
-        return wrapper.atColumn(column).atRow(row).adjacentBombCount();
     }
 }
