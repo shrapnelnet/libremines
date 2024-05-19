@@ -46,7 +46,6 @@
                 <version>1.0.22</version>
                 <configuration>
                     <mainClass>com.shr4pnel.minesweeper.Main</mainClass>
-                    <graalvmHome>/usr/local/lib/graalvm-jdk-21.0.3+7.1</graalvmHome>
                 </configuration>
             </plugin>
             <plugin>
