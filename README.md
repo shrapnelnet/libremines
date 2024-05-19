@@ -1,0 +1,1 @@
+[![Maven Package](https://github.com/shrapnelnet/libremines/actions/workflows/maven-publish.yml/badge.svg?event=page_build)](https://github.com/shrapnelnet/libremines/actions/workflows/maven-publish.yml)
