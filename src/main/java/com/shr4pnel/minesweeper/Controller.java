@@ -236,11 +236,16 @@ public class Controller {
 
     private void showAllBombs(int clickedColumn, int clickedRow) {
         for (Node node : grid.getChildren()) {
+            Button b = (Button) node;
+            String buttonURL = ((ImageView) b.getGraphic()).getImage().getUrl();
             int column = GridPane.getColumnIndex(node);
             int row = GridPane.getRowIndex(node);
             if (!(column == clickedColumn && row == clickedRow) &&
                 wrapper.atColumn(column).atRow(row).isBomb()) {
                 setImage((Button) node, "img/bomb_revealed.png");
+            }
+            if (buttonURL.contains("flagged.png") && !wrapper.atColumn(column).atRow(row).isBomb()) {
+                setImage(b, "img/bomb_wrong.png");
             }
         }
     }
@@ -269,7 +274,6 @@ public class Controller {
 
     private void setAdjacentCount(Node tileClicked, int adjacentBombs) {
         Button button = (Button) tileClicked;
-        URL imageURL = getClass().getResource("img/num_" + adjacentBombs + ".png");
-        button.setGraphic(new ImageView(new Image(String.valueOf(imageURL), 16, 16, true, false)));
+        setImage(button, "img/num_" + adjacentBombs + ".png");
     }
 }
