@@ -42,3 +42,8 @@ bin/
 .DS_Store
 .idea
 lib
+target
+.mvn
+src/main/resources/META-INF
+mvnw
+mvnw.cmd

@@ -28,6 +28,7 @@ public class Controller {
     private long startTime;
     private int bombCount = 99;
     private boolean[][] expandedTiles;
+    private boolean isFirstClick = true;
 
     @FXML
     private void initialize() {
@@ -81,10 +82,24 @@ public class Controller {
         handlePrimaryClick(clicked, column, row);
     }
 
+    private void setBombIfFirstTileIsBomb() {
+        for (int c = 0; c < 30; ++c) {
+            for (int r = 0; r < 16; ++r) {
+                if (!wrapper.atColumn(c).atRow(r).isBomb()) {
+                    wrapper.setBomb();
+                    System.out.println("erm");
+                    return;
+                }
+            }
+        }
+    }
+
     private void handlePrimaryClick(Button clicked, int column, int row) {
-        if (wrapper.atColumn(column).atRow(row).isBomb()) {
+        if (wrapper.atColumn(column).atRow(row).isBomb() && !isFirstClick) {
             gameOver(clicked);
             return;
+        } else if (wrapper.isBomb() && isFirstClick) {
+            setBombIfFirstTileIsBomb();
         }
         int adjacentBombs = wrapper.adjacentBombCount();
         setAdjacentCount(clicked, adjacentBombs);
@@ -145,6 +160,7 @@ public class Controller {
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
         expandedTiles = new boolean[30][16];
+        isFirstClick = true;
     }
 
     private void resetTimer() {
