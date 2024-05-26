@@ -62,6 +62,11 @@ public class GridWrapper {
         return count;
     }
 
+    public void updateGrid(int oldColumn, int oldRow, int newColumn, int newRow) {
+        grid[oldColumn][oldRow] = false;
+        grid[newColumn][newRow] = true;
+    }
+
     private boolean isBombAt(int column, int row) {
         return isValid(column, row) && grid[column][row];
     }

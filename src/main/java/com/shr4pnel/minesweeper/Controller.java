@@ -36,7 +36,6 @@ public class Controller {
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
         expandedTiles = new boolean[30][16];
-
     }
 
     private void setupGrid() {
@@ -82,11 +81,12 @@ public class Controller {
         handlePrimaryClick(clicked, column, row);
     }
 
-    private void setBombIfFirstTileIsBomb() {
+    private void setBombIfFirstTileIsBomb(int column, int row) {
         for (int c = 0; c < 30; ++c) {
             for (int r = 0; r < 16; ++r) {
                 if (!wrapper.atColumn(c).atRow(r).isBomb()) {
                     wrapper.setBomb();
+                    wrapper.updateGrid(column, row, c, r);
                     System.out.println("erm");
                     return;
                 }
@@ -99,7 +99,8 @@ public class Controller {
             gameOver(clicked);
             return;
         } else if (wrapper.isBomb() && isFirstClick) {
-            setBombIfFirstTileIsBomb();
+            isFirstClick = false;
+            setBombIfFirstTileIsBomb(column, row);
         }
         int adjacentBombs = wrapper.adjacentBombCount();
         setAdjacentCount(clicked, adjacentBombs);
