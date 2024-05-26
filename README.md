@@ -1,1 +1,3 @@
-[![Maven Package](https://github.com/shrapnelnet/libremines/actions/workflows/maven-publish.yml/badge.svg?event=page_build)](https://github.com/shrapnelnet/libremines/actions/workflows/maven-publish.yml)
+# Libremines
+
+"named this way because i didn't realise there was another libremines!"
