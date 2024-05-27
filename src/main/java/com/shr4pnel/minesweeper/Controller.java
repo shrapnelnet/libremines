@@ -3,6 +3,7 @@ package com.shr4pnel.minesweeper;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -49,13 +50,27 @@ public class Controller {
 
     private Button createBlankButton() {
         Image blank =
-            new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true, true);
+                new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true, true);
         ImageView blankImage = new ImageView(blank);
         Button blankButton = new Button();
         blankButton.setGraphic(blankImage);
         blankButton.setMinSize(16, 16);
         blankButton.setOnMouseClicked(this::buttonClicked);
+        blankButton.setOnMousePressed(this::mouseHeld);
+        blankButton.setOnMouseReleased(this::mouseReleased);
         return blankButton;
+    }
+
+    private void mouseHeld(MouseEvent mouseEvent) {
+        if (gameOver)
+            return;
+        setImage(smiley, "img/face_ooh.png");
+    }
+
+    private void mouseReleased(MouseEvent mouseEvent) {
+        if (gameOver)
+            return;
+        setImage(smiley, "img/face_smile.png");
     }
 
     private void buttonClicked(MouseEvent e) {
@@ -81,26 +96,33 @@ public class Controller {
         handlePrimaryClick(clicked, column, row);
     }
 
-    private void setBombIfFirstTileIsBomb(int column, int row) {
+    private int[] setBombIfFirstTileIsBomb(int column, int row) {
         for (int c = 0; c < 30; ++c) {
             for (int r = 0; r < 16; ++r) {
                 if (!wrapper.atColumn(c).atRow(r).isBomb()) {
                     wrapper.setBomb();
                     wrapper.updateGrid(column, row, c, r);
-                    System.out.println("erm");
-                    return;
+                    return new int[]{c, r};
                 }
             }
         }
+        return null;
     }
 
     private void handlePrimaryClick(Button clicked, int column, int row) {
         if (wrapper.atColumn(column).atRow(row).isBomb() && !isFirstClick) {
             gameOver(clicked);
             return;
-        } else if (wrapper.isBomb() && isFirstClick) {
+        }
+        if (wrapper.isBomb() && isFirstClick) {
+            int[] chosenColumnAndRow = setBombIfFirstTileIsBomb(column, row);
+            // assertions are evil but i dont care
+            assert chosenColumnAndRow != null;
+            int columnMovedTo = chosenColumnAndRow[0];
+            int rowMovedTo = chosenColumnAndRow[1];
+            wrapper.atColumn(column).atRow(row).switchBomb(columnMovedTo, rowMovedTo);
+            recursiveExpandTiles(column, row);
             isFirstClick = false;
-            setBombIfFirstTileIsBomb(column, row);
         }
         int adjacentBombs = wrapper.adjacentBombCount();
         setAdjacentCount(clicked, adjacentBombs);
@@ -112,7 +134,7 @@ public class Controller {
 
     private void recursiveExpandTiles(int column, int row) {
         if (column < 0 || column >= 30 || row < 0 || row >= 16 ||
-            expandedTiles[column][row] && !wrapper.atColumn(column).atRow(row).isBomb()) {
+                expandedTiles[column][row] && !wrapper.atColumn(column).atRow(row).isBomb()) {
             return;
         }
         expandTile(column, row);
@@ -154,6 +176,7 @@ public class Controller {
 
     @FXML
     private void reinitialize() {
+        gameOver = false;
         bombCount = 99;
         updateBombCounter();
         resetTimer();
@@ -195,7 +218,7 @@ public class Controller {
         ImageView tileGraphic = (ImageView) tileAsButton.getGraphic();
         Image tileGraphicImage = tileGraphic.getImage();
         if (!tileGraphicImage.getUrl().contains("blank.png") &&
-            !tileGraphicImage.getUrl().contains("flagged.png")) {
+                !tileGraphicImage.getUrl().contains("flagged.png")) {
             return;
         }
         boolean flagged = tileGraphicImage.getUrl().contains("flagged.png");
@@ -258,7 +281,7 @@ public class Controller {
             int column = GridPane.getColumnIndex(node);
             int row = GridPane.getRowIndex(node);
             if (!(column == clickedColumn && row == clickedRow) &&
-                wrapper.atColumn(column).atRow(row).isBomb()) {
+                    wrapper.atColumn(column).atRow(row).isBomb()) {
                 setImage((Button) node, "img/bomb_revealed.png");
             }
             if (buttonURL.contains("flagged.png") && !wrapper.atColumn(column).atRow(row).isBomb()) {
@@ -284,7 +307,6 @@ public class Controller {
 
     @FXML
     private void smileyReleased() {
-        gameOver = false;
         setImage(smiley, "img/face_smile.png");
         reinitialize();
     }

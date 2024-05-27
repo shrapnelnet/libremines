@@ -28,6 +28,13 @@ public class GridWrapper {
         }
     }
 
+    public void switchBomb(int destinationColumn, int destinationRow) {
+        if (isValid(currentColumn, currentRow) && isValid(destinationColumn, destinationRow)) {
+            grid[destinationColumn][destinationRow] = true;
+            grid[currentColumn][currentRow] = false;
+        }
+    }
+
     public boolean isBomb() {
         return isValid(currentColumn, currentRow) && grid[currentColumn][currentRow];
     }
