@@ -2,6 +2,9 @@
 
 "named this way because i didn't realise there was another libremines!"
 
+![Libremines screenshot](https://github.com/shrapnelnet/libremines/assets/133451255/f19e0006-a587-4f39-8626-67606db7cd58)
+
+
 ## Building
 
 ### Requirements:
