@@ -17,7 +17,7 @@
 Optional, create maven wrapper:
 
 ```shell
-mvn wrapper:wrapper
+mvn wrapper:wrapper -Dmaven=3.8.8
 ```
 
 This is helpful for version management, in case you have an incompatible version of maven installed, but most people will not need this.
