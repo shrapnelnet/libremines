@@ -14,7 +14,7 @@
 
 ### Instructions:
 
-Create the maven wrapper. gluonfx does not like versions of maven that are not 3.8.8 (#2):
+Create the maven wrapper. gluonfx does not like versions of maven that are not 3.8.8:
 
 ```shell
 mvn wrapper:wrapper -Dmaven=3.8.8
