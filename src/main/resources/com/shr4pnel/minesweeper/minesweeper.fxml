@@ -26,8 +26,8 @@
                         <RadioMenuItem mnemonicParsing="false" text="Internmediate" toggleGroup="$difficulty" />
                         <RadioMenuItem mnemonicParsing="false" selected="true" text="Expert" toggleGroup="$difficulty" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <RadioMenuItem mnemonicParsing="false" selected="true" text="Marks (?)" />
-                        <RadioMenuItem mnemonicParsing="false" selected="true" text="Color" />
+                        <RadioMenuItem fx:id="marks" mnemonicParsing="false" selected="true" text="Marks (?)" />
+                        <RadioMenuItem fx:id="color" mnemonicParsing="false" selected="true" text="Color" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" style="-fx-padding-right: 15; -fx-border-insets: 10px; -fx-background-insets: 10px;" text="Best Times..." />
                         <SeparatorMenuItem mnemonicParsing="false" />

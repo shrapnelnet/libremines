@@ -4,9 +4,11 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -19,6 +21,9 @@ public class Controller {
 
     @FXML
     private ImageView smiley, time_1, time_2, time_3, bomb_2, bomb_3;
+
+    @FXML
+    private RadioMenuItem color, marks;
 
     private Grid gridHandler;
     private GridWrapper wrapper;
@@ -33,10 +38,16 @@ public class Controller {
 
     @FXML
     private void initialize() {
+        setNotYetImplemented(color);
+        setNotYetImplemented(marks);
         setupGrid();
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
         expandedTiles = new boolean[30][16];
+    }
+
+    private void setNotYetImplemented(RadioMenuItem node) {
+        node.setOnAction((ActionEvent e) -> System.out.println("https://http.cat/images/501.jpg"));
     }
 
     private void setupGrid() {
