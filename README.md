@@ -20,8 +20,7 @@ Optional, create maven wrapper:
 mvn wrapper:wrapper -Dmaven=3.8.8
 ```
 
-This is helpful for version management, in case you have an incompatible version of maven installed, but most people will not need this.
-
+This is helpful for version management, in case you have an incompatible version of maven installed.
 Install dependencies:
 
 ```shell
