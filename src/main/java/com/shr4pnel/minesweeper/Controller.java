@@ -122,14 +122,14 @@ public class Controller {
             int rowMovedTo = chosenColumnAndRow[1];
             wrapper.atColumn(column).atRow(row).switchBomb(columnMovedTo, rowMovedTo);
             recursiveExpandTiles(column, row);
-            isFirstClick = false;
+            clicked = (Button) getNodeByRowColumnIndex(row, column);
         }
+        isFirstClick = false;
         int adjacentBombs = wrapper.adjacentBombCount();
         setAdjacentCount(clicked, adjacentBombs);
         if (adjacentBombs == 0) {
             recursiveExpandTiles(column, row);
         }
-
     }
 
     private void recursiveExpandTiles(int column, int row) {
