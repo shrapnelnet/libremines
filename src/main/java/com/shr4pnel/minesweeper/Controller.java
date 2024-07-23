@@ -120,6 +120,33 @@ public class Controller {
         return null;
     }
 
+    private String getButtonURL(Button button) {
+        ImageView graphic = (ImageView) button.getGraphic();
+        Image image = graphic.getImage();
+        return image.getUrl();
+    }
+
+    private int numberOfUnrevealedTiles() {
+        int unrevealedTiles = 0;
+        int column, row;
+        for (column = 0; column < 30; ++column) {
+            for (row = 0; row < 16; ++row) {
+                Button current = (Button) getNodeByRowColumnIndex(row, column);
+                assert current != null;
+                String currentURL = getButtonURL(current);
+                if (currentURL.contains("blank.png") || currentURL.contains("flag.png")) {
+                    unrevealedTiles++;
+                }
+            }
+        }
+        return unrevealedTiles;
+    }
+
+    private boolean checkWinCondition() {
+        int unrevealedTiles = numberOfUnrevealedTiles();
+        return unrevealedTiles == 99;
+    }
+
     private void handlePrimaryClick(Button clicked, int column, int row) {
         if (wrapper.atColumn(column).atRow(row).isBomb() && !isFirstClick) {
             gameOver(clicked);
@@ -140,6 +167,10 @@ public class Controller {
         setAdjacentCount(clicked, adjacentBombs);
         if (adjacentBombs == 0) {
             recursiveExpandTiles(column, row);
+        }
+        boolean win = checkWinCondition();
+        if (win) {
+            win();
         }
     }
 
@@ -224,6 +255,28 @@ public class Controller {
         showAllBombs(GridPane.getColumnIndex(tileClicked), GridPane.getRowIndex(tileClicked));
     }
 
+    private void win() {
+        gameOver = true;
+        timer.cancel();
+        setImage(smiley, "img/face_win.png");
+        flagAllRemaining();
+    }
+
+    private void flagAllRemaining() {
+        int column, row;
+        for (column = 0; column < 30; ++column) {
+            for (row = 0; row < 16; ++row) {
+                Button current = (Button) getNodeByRowColumnIndex(row, column);
+                assert current != null;
+                String currentURL = getButtonURL(current);
+                boolean tileIsBomb = wrapper.atColumn(column).atRow(row).isBomb();
+                if (currentURL.contains("blank.png") && tileIsBomb) {
+                    setImage(current, "img/bomb_flagged.png");
+                }
+            }
+        }
+    }
+
     private void flag(Node tileClicked) {
         Button tileAsButton = (Button) tileClicked;
         ImageView tileGraphic = (ImageView) tileAsButton.getGraphic();
@@ -240,7 +293,8 @@ public class Controller {
             return;
         }
         bombCount--;
-        updateBombCounter();
+        if (bombCount > 0)
+            updateBombCounter();
         setImage((Button) tileClicked, "img/bomb_flagged.png");
 
     }
@@ -291,8 +345,8 @@ public class Controller {
             String buttonURL = ((ImageView) b.getGraphic()).getImage().getUrl();
             int column = GridPane.getColumnIndex(node);
             int row = GridPane.getRowIndex(node);
-            if (!(column == clickedColumn && row == clickedRow) &&
-                    wrapper.atColumn(column).atRow(row).isBomb()) {
+            // if the tile isn't the one that was clicked AND the tile is a bomb
+            if (!(column == clickedColumn && row == clickedRow) && wrapper.atColumn(column).atRow(row).isBomb()) {
                 setImage((Button) node, "img/bomb_revealed.png");
             }
             if (buttonURL.contains("flagged.png") && !wrapper.atColumn(column).atRow(row).isBomb()) {
