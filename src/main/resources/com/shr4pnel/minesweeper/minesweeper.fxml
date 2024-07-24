@@ -8,7 +8,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="500.0" style="-fx-border-color: black; -fx-border-width: 1px;" stylesheets="@fix-glow.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.shr4pnel.minesweeper.Controller">
     <children>
-        <MenuBar style="-fx-background-color: white;">
+        <MenuBar prefWidth="498.0" style="-fx-background-color: white;">
             <menus>
                 <Menu mnemonicParsing="false" text="Game">
                     <items>
@@ -23,7 +23,7 @@
                                 <ToggleGroup fx:id="difficulty" />
                             </toggleGroup>
                         </RadioMenuItem>
-                        <RadioMenuItem mnemonicParsing="false" text="Internmediate" toggleGroup="$difficulty" />
+                        <RadioMenuItem mnemonicParsing="false" text="Intermediate" toggleGroup="$difficulty" />
                         <RadioMenuItem mnemonicParsing="false" selected="true" text="Expert" toggleGroup="$difficulty" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <RadioMenuItem fx:id="marks" mnemonicParsing="false" selected="true" text="Marks (?)" />
@@ -36,7 +36,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About Minesweeper" />
+                        <MenuItem fx:id="about" mnemonicParsing="false" text="About Minesweeper" />
                     </items>
                 </Menu>
             </menus>

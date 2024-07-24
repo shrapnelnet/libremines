@@ -1,19 +1,26 @@
 package com.shr4pnel.minesweeper;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 public class Controller {
     @FXML
@@ -24,6 +31,9 @@ public class Controller {
 
     @FXML
     private RadioMenuItem color, marks;
+
+    @FXML
+    private MenuItem about;
 
     private Grid gridHandler;
     private GridWrapper wrapper;
@@ -40,14 +50,40 @@ public class Controller {
     private void initialize() {
         setNotYetImplemented(color);
         setNotYetImplemented(marks);
+        about.setOnAction(this::openAbout);
         setupGrid();
         gridHandler = new Grid();
         wrapper = gridHandler.grid;
         expandedTiles = new boolean[30][16];
     }
 
+    private void openAbout(ActionEvent actionEvent) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("about.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("About");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setNotYetImplemented(RadioMenuItem node) {
-        node.setOnAction((ActionEvent e) -> System.out.println("https://http.cat/images/501.jpg"));
+        node.setOnAction(new EventHandler<>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    Parent root = FXMLLoader.load(getClass().getResource("unimplemented.fxml"));
+                    Stage stage = new Stage();
+                    stage.setTitle("Unimplemented!");
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void setupGrid() {
@@ -60,8 +96,7 @@ public class Controller {
     }
 
     private Button createBlankButton() {
-        Image blank =
-                new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true, true);
+        Image blank = new Image(String.valueOf(getClass().getResource("img/blank.png")), 16, 16, true, false);
         ImageView blankImage = new ImageView(blank);
         Button blankButton = new Button();
         blankButton.setGraphic(blankImage);

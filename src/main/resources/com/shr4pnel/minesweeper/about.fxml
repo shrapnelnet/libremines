@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="225.0" prefWidth="454.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="146.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@winmine.png" />
+            </image>
+        </ImageView>
+        <Text layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="made with love - shrapnelnet" textAlignment="CENTER" wrappingWidth="454.0">
+            <font>
+                <Font name="Source Code Pro" size="13.0" />
+            </font>
+        </Text>
+        <Text layoutY="183.0" strokeType="OUTSIDE" strokeWidth="0.0" text="greeTz: b4rkod, ping, cockpit, vulon, i330 n' porcupine" textAlignment="CENTER" wrappingWidth="454.0">
+            <font>
+                <Font name="Source Code Pro" size="13.0" />
+            </font>
+        </Text>
+        <Text layoutY="200.0" strokeType="OUTSIDE" strokeWidth="0.0" text="next time make your own!" textAlignment="CENTER" wrappingWidth="454.0">
+            <font>
+                <Font name="Source Code Pro" size="13.0" />
+            </font>
+        </Text>
+
+    </children>
+</AnchorPane>
