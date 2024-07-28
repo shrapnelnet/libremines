@@ -1,18 +1,24 @@
 package com.shr4pnel.minesweeper;
 
-
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Grid {
     final GridWrapper grid = new GridWrapper();
 
+    /**
+     * Generates the bomb-grid structure on instantiation
+     *
+     * @see #generateBombs(int)
+     */
     public Grid() {
-        // todo fix beginner mode and intermediate!
-        // sorry :3
-        // 99 bombs in expert:
         generateBombs(99);
     }
 
+    /**
+     * Generates a boolean 2D array by randomly selecting a column and row, and setting it to true to represent a bomb.
+     *
+     * @param bombMax The number of bombs to generate.
+     */
     private void generateBombs(int bombMax) {
         int i;
         boolean success;
