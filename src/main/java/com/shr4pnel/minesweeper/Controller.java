@@ -293,7 +293,7 @@ public class Controller {
                 Button current = (Button) getNodeByRowColumnIndex(row, column);
                 assert current != null;
                 String currentURL = getButtonURL(current);
-                if (currentURL.contains("blank.png") || currentURL.contains("flag.png")) {
+                if (currentURL.contains("blank.png") || currentURL.contains("flagged.png")) {
                     unrevealedTiles++;
                 }
             }
