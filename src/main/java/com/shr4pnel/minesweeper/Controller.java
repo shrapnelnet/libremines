@@ -22,6 +22,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+/**
+ * The JavaFX controller for minesweeper.fxml.
+ * Handles all operations performed within the GUI.
+ * @author shrapnelnet admin@shr4pnel.com
+ */
 public class Controller {
     /**
      * The grid within the FXML holding all the tiles.
@@ -347,7 +352,7 @@ public class Controller {
     }
 
     /**
-     * If a tile is surrounded by tiles with no adjacent bombs, open all of the tiles recursively
+     * If a tile is surrounded by tiles with no adjacent bombs, open all the tiles recursively
      *
      * @param column The column that was clicked
      * @param row    The row that was clicked
@@ -497,7 +502,7 @@ public class Controller {
      * Create a flag on a tile, representing a tile that the user suspects has a bomb behind it.
      * This prevents the tile being clicked on.
      *
-     * @param tileClicked
+     * @param tileClicked The tile that the user clicks.
      */
     private void flag(Node tileClicked) {
         Button tileAsButton = (Button) tileClicked;

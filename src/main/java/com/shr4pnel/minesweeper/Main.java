@@ -9,6 +9,10 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+/**
+ * The application opening point, used to bootstrap JavaFX and open to the GUI.
+ * @since 1.0.0
+ */
 public class Main extends Application {
     /**
      * JavaFX opening method. Creates the stage and bootstraps the application.
