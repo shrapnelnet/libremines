@@ -2,7 +2,14 @@ package com.shr4pnel.minesweeper;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Used to fill the GridWrapper with bombs. Planned to merge into GridWrapper.
+ * @since 1.0.0
+ */
 public class Grid {
+    /**
+     * An instance of GridWrapper used to check generation of bombs.
+     */
     final GridWrapper grid = new GridWrapper();
 
     /**
