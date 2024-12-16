@@ -126,6 +126,8 @@ public class Controller {
             Parent root = FXMLLoader.load(getClass().getResource("about.fxml"));
             Stage stage = new Stage();
             stage.setTitle("About");
+	    stage.setMinWidth(455);
+	    stage.setMinHeight(275);
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
@@ -146,6 +148,8 @@ public class Controller {
                     Parent root = FXMLLoader.load(getClass().getResource("unimplemented.fxml"));
                     Stage stage = new Stage();
                     stage.setTitle("Unimplemented!");
+		    stage.setMinHeight(420);
+		    stage.setMinWidth(525);
                     stage.setScene(new Scene(root));
                     stage.show();
                 } catch (IOException e) {
