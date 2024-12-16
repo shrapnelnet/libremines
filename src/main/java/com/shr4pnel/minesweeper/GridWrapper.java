@@ -1,9 +1,5 @@
 package com.shr4pnel.minesweeper;
 
-/**
- * Simplifies operations on the bomb array. Preventing direct access leads to cleaner code.
- * @since 1.0.0
- */
 public class GridWrapper {
     /**
      * Number of columns.
