@@ -346,8 +346,11 @@ public class Controller {
         int column, row;
         for (column = 0; column < 30; ++column) {
             for (row = 0; row < 16; ++row) {
-                Button current = (Button) getNodeByRowColumnIndex(row, column);
-                assert current != null;
+                Button current = (Button) getNodeByColumnRowIndex(column, row);
+                // this will hopefully never happen..... or will it ......
+                if (current == null) {
+                    continue;
+                }
                 String currentURL = getButtonURL(current);
                 if (currentURL.contains("blank.png") || currentURL.contains("flagged.png")) {
                     unrevealedTiles++;
@@ -382,13 +385,11 @@ public class Controller {
         }
         if (wrapper.isBomb() && isFirstClick) {
             int[] chosenColumnAndRow = setBombIfFirstTileIsBomb(column, row);
-            // assertions are evil but i dont care
-            assert chosenColumnAndRow != null;
             int columnMovedTo = chosenColumnAndRow[0];
             int rowMovedTo = chosenColumnAndRow[1];
             wrapper.atColumn(column).atRow(row).switchBomb(columnMovedTo, rowMovedTo);
             recursiveExpandTiles(column, row);
-            clicked = (Button) getNodeByRowColumnIndex(row, column);
+            clicked = (Button) getNodeByColumnRowIndex(column, row);
         }
         isFirstClick = false;
         int adjacentBombs = wrapper.adjacentBombCount();
@@ -434,7 +435,7 @@ public class Controller {
      * @param row    The row of the button to open
      */
     private void expandTile(int column, int row) {
-        Node tile = getNodeByRowColumnIndex(row, column);
+        Node tile = getNodeByColumnRowIndex(column, row);
         if (tile != null) {
             Button button = (Button) tile;
             if (button.isVisible()) {
@@ -472,7 +473,7 @@ public class Controller {
      * @param column The desired column to find
      * @return The node at the specified position
      */
-    private Node getNodeByRowColumnIndex(int row, int column) {
+    private Node getNodeByColumnRowIndex(int column, int row) {
         for (Node node : grid.getChildren()) {
             if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
                 return node;
@@ -555,7 +556,7 @@ public class Controller {
         int column, row;
         for (column = 0; column < 30; ++column) {
             for (row = 0; row < 16; ++row) {
-                Button current = (Button) getNodeByRowColumnIndex(row, column);
+                Button current = (Button) getNodeByColumnRowIndex(column, row);
                 assert current != null;
                 String currentURL = getButtonURL(current);
                 boolean tileIsBomb = wrapper.atColumn(column).atRow(row).isBomb();
