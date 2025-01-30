@@ -8,10 +8,22 @@
 
 ### Requirements:
 - Java 21
-- Maven 3.8.8 or lower
-- GraalVM 21
+- Maven
 
 ### Instructions:
+
+This will automatically fetch dependencies and run the project:
+
+```shell
+./mvnw javafx:run
+```
+
+
+#### Native Image:
+
+##### Requirements:
+- GraalVM
+- Maven 3.8.8
 
 Create the maven wrapper at version 3.8.8. GluonFX does not work with newer versions as of 2024-07-27.
 
@@ -26,9 +38,3 @@ Install dependencies, build and run:
 ```
 
 A native binary should be placed at `target/gluonfx/<your architecture>/libremines`
-
-Alternatively, to run using the JVM, use:
-
-```shell
-./mvnw javafx:run
-```
