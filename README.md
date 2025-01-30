@@ -15,7 +15,7 @@
 This will automatically fetch dependencies and run the project:
 
 ```shell
-./mvnw javafx:run
+mvn javafx:run
 ```
 
 
