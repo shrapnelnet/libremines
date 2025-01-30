@@ -319,8 +319,8 @@ public class Controller {
                 }
             }
         }
-        // this realistically should never happen... sorry!
-        return null;
+        System.out.println("If you see this, congrats! this should never happen. please email me.");
+        return new int[]{0, 0};
     }
 
     /**
@@ -336,7 +336,8 @@ public class Controller {
     }
 
     /**
-     * Iterates through the grid to find all tiles that are either blank or flagged
+     * Iterates through the grid to find all tiles that are either blank or flagged.
+     * Used to check if win condition has been met
      *
      * @return The number of tiles that were blank or flagged
      */
