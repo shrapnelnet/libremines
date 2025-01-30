@@ -159,4 +159,13 @@ public class GridWrapper {
     private boolean isValid(int column, int row) {
         return column >= 0 && column < COLUMNS && row >= 0 && row < ROWS;
     }
+
+    /**
+     * Checks if a given column and row is in bounds using local state
+     *
+     * @return A boolean representing the tile being in bounds.
+     */
+    public boolean isValid() {
+        return this.currentColumn >= 0 && this.currentColumn < COLUMNS && this.currentRow >= 0 && this.currentRow < ROWS;
+    }
 }
