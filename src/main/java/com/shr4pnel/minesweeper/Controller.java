@@ -2,6 +2,7 @@ package com.shr4pnel.minesweeper;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -236,25 +237,70 @@ public class Controller {
         if (buttonImage.getUrl().contains("flagged.png")) {
             return;
         }
-//        if (buttonImage.getUrl().contains("num") && !buttonImage.getUrl().contains("num_0.png")) {
-//            chord(clicked, buttonImage.getUrl());
-//            return;
-//        }
+        if (buttonImage.getUrl().contains("num") && !buttonImage.getUrl().contains("num_0.png")) {
+            chord(clicked, buttonImage.getUrl());
+            return;
+        }
         handlePrimaryClick(clicked, column, row);
     }
 
-//    private void chord(Button clicked, String clickedURL) {
-//        int column = GridPane.getColumnIndex(clicked);
-//        int row = GridPane.getRowIndex(clicked);
-//        int urlLength = clickedURL.length();
-//        char expectedAdjacentChar = clickedURL.charAt(urlLength-5);
-//        int expectedAdjacent = Integer.parseInt(Character.toString(expectedAdjacentChar));
-//        int actualAdjacent = wrapper.atColumn(column).atRow(row).adjacentBombCount();
-//        if (expectedAdjacent != actualAdjacent) {
-//            return;
-//        }
-//        // chord logic
-//    }
+    private int adjacentFlagCount(int column, int row) {
+        int flagCount = 0;
+        for (int innerColumn = column - 1; innerColumn <= column + 1; innerColumn++) {
+            for (int innerRow = row - 1; innerRow <= row + 1; innerRow++) {
+                if (innerColumn == column && innerRow == row)
+                    continue;
+
+                if (!wrapper.atColumn(innerColumn).atRow(innerRow).isValid()) {
+                    continue;
+                }
+
+                Button b = (Button) getNodeByColumnRowIndex(innerColumn, innerRow);
+                String bURL = getButtonURL(b);
+                if (bURL.contains("flag")) {
+                    flagCount++;
+                }
+            }
+        }
+        return flagCount;
+    }
+
+    private Button[] chordTilesToOpen(int column, int row) {
+        ArrayList<Button> buttons = new ArrayList<>(8);
+        for (int innerColumn = column - 1; innerColumn <= column + 1; innerColumn++) {
+            for (int innerRow = row - 1; innerRow <= row + 1; innerRow++) {
+                if (innerColumn == column && innerRow == row)
+                    continue;
+
+                if (!wrapper.atColumn(innerColumn).atRow(innerRow).isValid()) {
+                    continue;
+                }
+                Button b = (Button) getNodeByColumnRowIndex(innerColumn, innerRow);
+                String bURL = getButtonURL(b);
+                // if the tile is unflagged and unopened:
+                if (bURL.contains("blank")) {
+                    buttons.add(b);
+                }
+            }
+        }
+        return buttons.toArray(Button[]::new);
+    }
+
+    private void chord(Button clicked, String clickedURL) {
+        int column = GridPane.getColumnIndex(clicked);
+        int row = GridPane.getRowIndex(clicked);
+        int urlLength = clickedURL.length();
+        char requiredAdjacentChar = clickedURL.charAt(urlLength-5);
+        int requiredAdjacent = Integer.parseInt(Character.toString(requiredAdjacentChar));
+        int actualAdjacent = adjacentFlagCount(column, row);
+        if (requiredAdjacent != actualAdjacent) {
+            return;
+        }
+        Button[] buttons = chordTilesToOpen(column, row);
+        for (Button b: buttons) {
+            expandTile(b);
+        }
+    }
 
     /**
      * If the first tile clicked was a bomb, move that bomb to the first available column on row 0 before opening it
@@ -397,6 +443,23 @@ public class Controller {
                     expandedTiles[column][row] = true;
                     recursiveExpandTiles(column, row);
                 }
+            }
+        }
+    }
+
+    private void expandTile(Button button) {
+        Node node = (Node) button;
+        int column = GridPane.getColumnIndex(node);
+        int row = GridPane.getRowIndex(node);
+        if (wrapper.atColumn(column).atRow(row).isBomb()) {
+            gameOver(node);
+        }
+        if (button.isVisible()) {
+            int adjacentBombs = wrapper.atColumn(column).atRow(row).adjacentBombCount();
+            setAdjacentCount(button, adjacentBombs);
+            if (adjacentBombs == 0 && !expandedTiles[column][row]) {
+                expandedTiles[column][row] = true;
+                recursiveExpandTiles(column, row);
             }
         }
     }
