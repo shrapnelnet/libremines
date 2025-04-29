@@ -14,10 +14,15 @@
 
 This will automatically fetch dependencies and run the project:
 
+#### Linux:
+
 ```shell
-mvn javafx:run
+./mvnw javafx:run
 ```
 
+```powershell
+./mvnw.cmd javafx:run
+```
 
 #### Native Image:
 
